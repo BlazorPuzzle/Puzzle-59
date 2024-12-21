@@ -1,0 +1,53 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Blazor Puzzle 59</h1>
+
+<p>This is a .NET 9 Blazor Web App with global server interactivity.</p>
+
+<p>Our customer has requested we allow currency (decimal) values to be formatted with a $, and made editable.</p>
+
+<p>We can not use a third-party tool. We must use a standard HTML input tag.</p>
+
+<p>How can we allow editing and still format the value as currency rounded to two decimal places and including a dollar sign?</p>
+
+<p>Non-numeric values should be ignored, as should numbers two places to the right of the decimal point.</p>
+
+<input onfocus="this.select()" style="font-weight:bold;text-align:right;"
+       @bind="@EditableCurrencyValue" />
+<br />
+<br />
+<button>Dummy Button</button>
+
+@code {
+
+    decimal MyCurrencyValue { get; set; } = 0;
+
+    string EditableCurrencyValue
+    {
+        get => MyCurrencyValue.ToString("C");
+        set
+        {
+            var newValue = CleanAndFormatDecimal(value, 2);
+            if (newValue != 0)
+                MyCurrencyValue = newValue;
+        }
+    }
+
+    decimal CleanAndFormatDecimal(string input, int decimalPlaces)
+    {
+        // Try to parse the input string as a decimal
+        if (decimal.TryParse(input, out decimal result))
+        {
+            // Format the decimal with the specified number of decimal places
+            var formattedString = Math.Round(result, decimalPlaces).ToString($"F{decimalPlaces}");
+            if (formattedString != "")
+                return decimal.Parse(formattedString);
+        }
+
+        // If parsing fails return 0
+        return 0;
+    }
+}
+
